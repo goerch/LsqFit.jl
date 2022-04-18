@@ -1,4 +1,6 @@
 struct LevenbergMarquardt <: Optimizer end
+realtype(::Type{T}) where {T<:Real} = T
+realtype(::Type{Complex{T}}) where {T<:Real} = T
 Base.summary(::LevenbergMarquardt) = "Levenberg-Marquardt"
 """
     `levenberg_marquardt(f, g, initial_x; <keyword arguments>`
@@ -33,7 +35,7 @@ Comp & Applied Math).
 # it would probably be very inefficient performace-wise for most cases, but it wouldn't hurt to have it somewhere
 function levenberg_marquardt(df::OnceDifferentiable, initial_x::AbstractVector{T};
     x_tol::Real = 1e-8, g_tol::Real = 1e-12, maxIter::Integer = 1000,
-    lambda = T(10), tau=T(Inf), lambda_increase::Real = 10.0, lambda_decrease::Real = 0.1,
+    lambda = realtype(T)(10), tau=realtype(T)(Inf), lambda_increase::Real = 10.0, lambda_decrease::Real = 0.1,
     min_step_quality::Real = 1e-3, good_step_quality::Real = 0.75,
     show_trace::Bool = false, lower::AbstractVector{T} = Array{T}(undef, 0), upper::AbstractVector{T} = Array{T}(undef, 0), avv!::Union{Function,Nothing,Avv} = nothing
     ) where T
@@ -42,7 +44,7 @@ function levenberg_marquardt(df::OnceDifferentiable, initial_x::AbstractVector{T
     value_jacobian!!(df, initial_x)
 
     if isfinite(tau)
-        lambda = tau*maximum(jacobian(df)'*jacobian(df))
+        lambda = tau*maximum(real.(jacobian(df)'*jacobian(df)))
     end
 
 
@@ -216,25 +218,25 @@ function levenberg_marquardt(df::OnceDifferentiable, initial_x::AbstractVector{T
     end
 
     MultivariateOptimizationResults(
-        LevenbergMarquardt(),    # method
-        initial_x,             # initial_x
-        x,                     # minimizer
-        sum(abs2, value(df)),       # minimum
-        iterCt,                # iterations
-        !converged,            # iteration_converged
-        x_converged,           # x_converged
-        0.0,                   # x_tol
+        LevenbergMarquardt(),       # method
+        initial_x,                  # initial_x
+        x,                          # minimizer
+        T(sum(abs2, value(df))),    # minimum
+        iterCt,                     # iterations
+        !converged,                 # iteration_converged
+        x_converged,                # x_converged
+        0.0,                        # x_tol
         0.0,
-        false,                 # f_converged
-        0.0,                   # f_tol
+        false,                      # f_converged
+        0.0,                        # f_tol
         0.0,
-        g_converged,           # g_converged
-        g_tol,                  # g_tol
+        g_converged,                # g_converged
+        g_tol,                      # g_tol
         0.0,
-        false,                 # f_increased
-        tr,                    # trace
-        first(df.f_calls),               # f_calls
-        first(df.df_calls),               # g_calls
-        0                      # h_calls
+        false,                      # f_increased
+        tr,                         # trace
+        first(df.f_calls),          # f_calls
+        first(df.df_calls),         # g_calls
+        0                           # h_calls
     )
 end

@@ -219,7 +219,7 @@ function StatsBase.stderror(fit::LsqFitResult; rtol::Real=NaN, atol::Real=0)
     #   rtol  : relative tolerance for approximate comparisson to 0.0 in negativity check
     covar = estimate_covar(fit)
     # then the standard errors are given by the sqrt of the diagonal
-    vars = diag(covar)
+    vars = real.(diag(covar))
     vratio = minimum(vars)/maximum(vars)
     if !isapprox(vratio, 0.0, atol=atol, rtol=isnan(rtol) ? Base.rtoldefault(vratio, 0.0, 0) : rtol) && vratio < 0.0
         error("Covariance matrix is negative for atol=$atol and rtol=$rtol")
