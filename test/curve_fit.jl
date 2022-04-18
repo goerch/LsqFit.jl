@@ -21,7 +21,6 @@ for T in (Float32, Float64, ComplexF32, ComplexF64)
         # TODO: fix this once ForwardDiff can handle complex variables?
         for ad in (T<:Complex ? (:finite,) : (:finite, :forward, :forwarddiff))
             fit = curve_fit(model, xdata, ydata, p0; autodiff = ad)
-            @show fit.param
             @assert norm(fit.param - [1.0, 2.0]) < 0.05
             @test fit.converged
 

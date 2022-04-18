@@ -1,6 +1,4 @@
 struct LevenbergMarquardt <: Optimizer end
-realtype(::Type{T}) where {T<:Real} = T
-realtype(::Type{Complex{T}}) where {T<:Real} = T
 Base.summary(::LevenbergMarquardt) = "Levenberg-Marquardt"
 """
     `levenberg_marquardt(f, g, initial_x; <keyword arguments>`
@@ -35,7 +33,7 @@ Comp & Applied Math).
 # it would probably be very inefficient performace-wise for most cases, but it wouldn't hurt to have it somewhere
 function levenberg_marquardt(df::OnceDifferentiable, initial_x::AbstractVector{T};
     x_tol::Real = 1e-8, g_tol::Real = 1e-12, maxIter::Integer = 1000,
-    lambda = realtype(T)(10), tau=realtype(T)(Inf), lambda_increase::Real = 10.0, lambda_decrease::Real = 0.1,
+    lambda = real(T)(10), tau=real(T)(Inf), lambda_increase::Real = 10.0, lambda_decrease::Real = 0.1,
     min_step_quality::Real = 1e-3, good_step_quality::Real = 0.75,
     show_trace::Bool = false, lower::AbstractVector{T} = Array{T}(undef, 0), upper::AbstractVector{T} = Array{T}(undef, 0), avv!::Union{Function,Nothing,Avv} = nothing
     ) where T
